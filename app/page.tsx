@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import LazyAd from '@/components/LazyAd';
-import { adConfigs } from '@/lib/adConfigs';
+import ReactMarkdown from 'react-markdown';
+import { apiFetch, getApiBaseUrl } from '@/lib/api';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = getApiBaseUrl(); // Use relative path for Next.js rewrites
 
 interface Version {
     id?: number;
@@ -41,7 +41,7 @@ export default function Page() {
         try {
             setLoading(true);
             setErrorMessage(null);
-            const response = await fetch(`${API_BASE_URL}/projects`);
+            const response = await apiFetch(`/projects`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -49,7 +49,7 @@ export default function Page() {
             setProjects(data);
         } catch (err) {
             console.error('获取项目数据失败:', err);
-            setErrorMessage('无法连接到服务器，请确保后端服务正在运行 (http://localhost:8000)');
+            setErrorMessage('无法连接到服务器，请确保后端服务正在运行');
             setProjects([]);
         } finally {
             setLoading(false);
@@ -199,15 +199,22 @@ export default function Page() {
                                         更新内容
                                     </h3>
                                     <div className="prose prose-sm max-w-none" data-oid="17sqnc2">
-                                        {selectedVersion.content.split('\n').map((line, index) => (
-                                            <p
-                                                key={index}
-                                                className="text-gray-700 mb-2"
-                                                data-oid="vt49179"
-                                            >
-                                                {line}
-                                            </p>
-                                        ))}
+                                        <ReactMarkdown
+                                            components={{
+                                                h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4" {...props} />,
+                                                h2: ({node, ...props}) => <h2 className="text-xl font-semibold mt-5 mb-3" {...props} />,
+                                                h3: ({node, ...props}) => <h3 className="text-lg font-medium mt-4 mb-2" {...props} />,
+                                                p: ({node, ...props}) => <p className="text-gray-700 mb-3" {...props} />,
+                                                ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4" {...props} />,
+                                                ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-4" {...props} />,
+                                                li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                                                a: ({node, ...props}) => <a className="text-blue-600 hover:underline" {...props} />,
+                                                strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+                                                em: ({node, ...props}) => <em className="italic" {...props} />,
+                                            }}
+                                        >
+                                            {selectedVersion.content}
+                                        </ReactMarkdown>
                                     </div>
                                 </div>
 
@@ -292,45 +299,11 @@ export default function Page() {
                     </div>
                 )}
 
-                {/* Top Banner Ad */}
-                <div className="bg-gray-100 border-b border-gray-200" data-oid="jj15ra3">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4" data-oid="xrzvc9k">
-                        <LazyAd
-                            config={adConfigs.topBanner}
-                            adType="banner"
-                            className="min-h-[90px]"
-                            fallbackContent={
-                                <div data-oid="6..533r">
-                                    <p className="text-blue-800 text-sm mb-2" data-oid="ucx46um">
-                                        支持我们
-                                    </p>
-                                    <p className="text-blue-600 text-xs" data-oid="q42osxw">
-                                        关闭广告屏蔽器以获得更好体验
-                                    </p>
-                                </div>
-                            }
-                            data-oid="0bmhfm."
-                        />
-                    </div>
-                </div>
-
                 {/* Main content */}
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-oid="3r3rf6a">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8" data-oid="y8-voxx">
-                        {/* Left Sidebar Ad */}
-                        <div className="hidden lg:block" data-oid="qonm8z:">
-                            <div className="sticky top-8" data-oid="novr_s8">
-                                <LazyAd
-                                    config={adConfigs.sidebarSkyscraper}
-                                    adType="sidebar"
-                                    className="mb-6 min-h-[600px]"
-                                    data-oid="lz2:197"
-                                />
-                            </div>
-                        </div>
-
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" data-oid="y8-voxx">
                         {/* Main Content */}
-                        <div className="lg:col-span-2" data-oid="9ns1qfl">
+                        <div className="lg:col-span-3" data-oid="9ns1qfl">
                             <div
                                 className="bg-white shadow-sm rounded-lg overflow-hidden"
                                 data-oid="_s7vjmo"
@@ -443,74 +416,9 @@ export default function Page() {
                                     </p>
                                 </div>
                             )}
-
-                            {/* Middle Content Ad */}
-                            {projects.length > 0 && (
-                                <div className="mt-8" data-oid="3vlc_-d">
-                                    <LazyAd
-                                        config={adConfigs.contentAd}
-                                        adType="content"
-                                        className="min-h-[250px]"
-                                        data-oid="hyut_10"
-                                    />
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Right Sidebar Ad */}
-                        <div className="hidden lg:block" data-oid="wo22t5x">
-                            <div className="sticky top-8 space-y-6" data-oid=".rp.kba">
-                                <LazyAd
-                                    config={adConfigs.sidebarSquare}
-                                    adType="sidebar"
-                                    className="min-h-[250px]"
-                                    data-oid="-hs35tm"
-                                />
-
-                                <LazyAd
-                                    config={{
-                                        id: 'sidebar-large-ad',
-                                        size: '300x600',
-                                        slot: '1234567897',
-                                        format: 'vertical',
-                                        responsive: false,
-                                    }}
-                                    adType="sidebar"
-                                    className="min-h-[600px]"
-                                    data-oid="j9uyvl6"
-                                />
-                            </div>
                         </div>
                     </div>
                 </main>
-
-                {/* Mobile Floating Ad */}
-                <div className="fixed bottom-4 left-4 right-4 lg:hidden z-50" data-oid="tfo7-vs">
-                    <div className="bg-white rounded-lg shadow-lg" data-oid="oy3cdos">
-                        <div className="flex justify-between items-center p-2" data-oid="mc1_0p6">
-                            <div className="flex-1" data-oid="qd8rd5g">
-                                <LazyAd
-                                    config={adConfigs.mobileFloating}
-                                    adType="mobile"
-                                    className="min-h-[50px]"
-                                    data-oid="kbex5kk"
-                                />
-                            </div>
-                            <button
-                                className="text-gray-400 hover:text-gray-600 ml-2 p-1"
-                                onClick={() => {
-                                    const floatingAd = document.querySelector(
-                                        '.fixed.bottom-4',
-                                    ) as HTMLElement;
-                                    if (floatingAd) floatingAd.style.display = 'none';
-                                }}
-                                data-oid="mbfpn6h"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </>
     );

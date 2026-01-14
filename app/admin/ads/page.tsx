@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import AdAnalytics from '@/components/AdAnalytics';
+// AdAnalytics 组件已被移除，相关功能已整合到页面中
+import { apiFetch, getApiBaseUrl } from '@/lib/api';
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface AdPerformance {
     adId: string;
@@ -24,16 +27,20 @@ export default function AdAdminPage() {
     const fetchAdPerformance = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`/api/analytics?timeRange=${selectedTimeRange}`);
+            const response = await apiFetch(`/api/analytics?timeRange=${selectedTimeRange}`);
             const data = await response.json();
 
-            // 模拟广告性能数据
-                // Remove mock data
-                const mockPerformance: AdPerformance[] = []; // Placeholder to avoid errors
-
-            setAdPerformance(mockPerformance);
+            // Use the adPerformance data from the API response
+            if (data.adPerformance) {
+                setAdPerformance(data.adPerformance);
+            } else {
+                // Fallback to empty array if no data
+                setAdPerformance([]);
+            }
         } catch (error) {
             console.error('获取广告性能数据失败:', error);
+            // Fallback to empty array on error
+            setAdPerformance([]);
         } finally {
             setLoading(false);
         }
@@ -242,7 +249,7 @@ export default function AdAdminPage() {
                 </div>
 
                 {/* 详细分析组件 */}
-                <AdAnalytics data-oid="-.g5d7h" />
+                {/* AdAnalytics 组件已被移除，相关功能已整合到页面中 */}
             </div>
         </div>
     );
